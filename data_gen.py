@@ -18,7 +18,7 @@ class TradingStrategy:
         self.time_diffs = []
         self.time_last_event = []
         
-        self.sma_30 = []
+        self.sma_60 = []
         self.sma_5 = []
         self.osvs = []
         self.first_trade = True
@@ -128,7 +128,7 @@ async def read_price(tickprice, theta = Query(...)):
                         strategy.time_last_event.append(strategy.confirmation_time - strategy.os_events[-2][0])
                         strategy.osvs.append(strategy.open_osv)
                         strategy.data_prices.append(tickprice)
-                        strategy.sma_30.append(np.mean(strategy.prices[-60:], axis = 0)[1])
+                        strategy.sma_60.append(np.mean(strategy.prices[-60:], axis = 0)[1])
                         strategy.sma_5.append(np.mean(strategy.prices[-5:], axis = 0)[1])
                         
                     print(f'Took profit @ {tickprice}')
@@ -142,7 +142,7 @@ async def read_price(tickprice, theta = Query(...)):
                         strategy.time_last_event.append(strategy.confirmation_time - strategy.os_events[-2][0])
                         strategy.osvs.append(strategy.open_osv)
                         strategy.data_prices.append(tickprice)
-                        strategy.sma_30.append(np.mean(strategy.prices[-60:], axis = 0)[1])
+                        strategy.sma_60.append(np.mean(strategy.prices[-60:], axis = 0)[1])
                         strategy.sma_5.append(np.mean(strategy.prices[-5:], axis = 0)[1])
 
                     print(f'Stopped Loss @ {tickprice}')
@@ -173,7 +173,7 @@ async def read_data():
     return {
         "prices" : strategy.data_prices,
         "osv" : strategy.open_osv,
-        "sma_30" : strategy.sma_30,
+        "sma_60" : strategy.sma_60,
         "sma_5" : strategy.sma_5,
         "z" : strategy.z,
         "time_diffs" : strategy.time_diffs,
