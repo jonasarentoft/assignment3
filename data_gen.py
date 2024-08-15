@@ -3,6 +3,13 @@ from fastapi import FastAPI, Query
 
 app = FastAPI()
 
+# This code generates the training data for the XGBoost Classifier.
+# It basically just mimicks the trading strategy from Assignment 2, and then when a position is closed,
+# we calculate Z, which indicates if the trade was profitable or not.
+# When the training then takes place (in the other file), we shit z such that we don't have any leakage in our training data
+
+
+
 class TradingStrategy:
     def __init__(self):
         
@@ -123,9 +130,12 @@ async def read_price(tickprice, theta = Query(...)):
                         
                         
                     else:
+                        
+                        
+                        # This is where the data is 'recorded'
                         strategy.z.append(1)
                         strategy.time_diffs.append(strategy.open_time - strategy.confirmation_time)
-                        strategy.time_last_event.append(strategy.confirmation_time - strategy.os_events[-2][0])
+                     	strategy.time_last_event.append(strategy.confirmation_time - strategy.os_events[-2][0])
                         strategy.osvs.append(strategy.open_osv)
                         strategy.data_prices.append(tickprice)
                         strategy.sma_60.append(np.mean(strategy.prices[-60:], axis = 0)[1])
