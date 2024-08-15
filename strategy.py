@@ -2,6 +2,9 @@ import numpy as np
 from fastapi import FastAPI, Query
 import pickle
 
+# This strategy utilizes the XGBoost Classifier (fitted in the other file) to try and predict if a 
+#buy signal when the OSV exceeds a certain threshold will be profitable
+
 app = FastAPI()
 
 class TradingStrategy:
@@ -59,7 +62,7 @@ class TradingStrategy:
 # Initialize strategy
 strategy = TradingStrategy()
 
-# Load model
+# Load model (this is saves from the other file)
 FILENAME = 'xgboost_classifier.pkl'
 XGBModel = pickle.load(open(FILENAME, "rb"))
 
@@ -116,9 +119,15 @@ async def read_price(tickprice, theta = Query(...)):
                 
                 time_between_os_and_dc = strategy.dc_events[-1][0] - strategy.os_events[-1][0]
                 
+                
+                
+                # Here, we 'create' the input vector to the XGBoost Classfier
                 X = np.array([SMA_30, SMA_5, time_since_dc, time_between_os_and_dc, strategy.second_trade_outcome, strategy.first_trade_outcome])
                 
                 #print(X)
+                
+                # We make the XGBoost Clasffier predict whether a buy signal will result in profit
+                # If 1, the strategy buys. If 0, nothing happens
                 signal = int(XGBModel.predict(X.reshape(1, -1))[0])
                 #print(signal)
                 #print(type(signal))
